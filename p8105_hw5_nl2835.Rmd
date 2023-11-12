@@ -49,8 +49,25 @@ baltimore = homicides |>
   filter(city_state == "Baltimore, MD") |> 
   mutate(
     unresolved = as.numeric(disposition == "Closed without arrest" | disposition == "Open/No arrest")) |> 
-  select(city_state, unresolved)
+  select(city_state, unresolved, everything()) |> 
+  group_by(unresolved) |> 
+  summarize(number = n()) |> 
+  mutate(total = sum(number)) |> 
+  filter(unresolved == 1) |> 
+  select(number, total)
 ```
+
+```{r prop test}
+baltimore_pt = 
+  prop.test(baltimore$number, baltimore$total) |>
+  broom::tidy() |> 
+  janitor::clean_names()
+
+baltimore_pt |> 
+  select(estimate, conf_low, conf_high) |> knitr::kable()
+```
+
+The estimated proportion of homicides unsolved is 0.6456 with a confidence interval of [0.627, 0.663].
 
 
 
