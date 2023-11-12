@@ -13,7 +13,10 @@ knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
 
 
 ```{r load csv file}
-homicides <- read.csv("./local/homicide-data.csv")
+homicides <-
+  read.csv("./local/homicide-data.csv") |> 
+  janitor::clean_names() |> 
+  separate(reported_date, into = c("year", "month", "day"), sep = c(4,6))  
 ```
 
 The raw data describes victim name, race, age, sex, location of homicide, and whether an arrest was made.
@@ -21,7 +24,6 @@ The raw data describes victim name, race, age, sex, location of homicide, and wh
 ```{r}
 homicides = homicides |> 
   mutate(city_state = paste(city, state, sep = ", ")) |> 
-  mutate(city_state = as.numeric(city_state)) |> 
   group_by(city_state) 
 
 ```
@@ -31,7 +33,7 @@ homicides |>
   summarize(count = n())
 ```
 
-There are `r nrow(homicides)` homicides.
+There are `r nrow(homicides)` homicides from 2010 to 2016.
 
 ```{r}
 homicides |> 
@@ -39,7 +41,16 @@ homicides |>
   summarize(count = n())
 ```
 
-There are `r homicides |> filter(disposition == "Closed without arrest" | disposition == "Open/No arrest") |> summarize(count = n()) |> pull(count)` unsolved homicides. 
+There are `r nrow(homicides |> filter(disposition == "Closed without arrest" | disposition == "Open/No arrest"))` unsolved homicides. 
+
+
+```{r df unsolved}
+baltimore = homicides |> 
+  filter(city_state == "Baltimore, MD") |> 
+  mutate(
+    unresolved = as.numeric(disposition == "Closed without arrest" | disposition == "Open/No arrest")) |> 
+  select(city_state, unresolved)
+```
 
 
 
