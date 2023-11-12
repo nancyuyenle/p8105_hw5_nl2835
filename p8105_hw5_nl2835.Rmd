@@ -108,7 +108,7 @@ output |>
   ggplot(aes(x = week, y = value, color = id)) + geom_line() + facet_grid(~arm)
 ```
 
-
+The experimental arm had higher average values overall and an increase over time, compared to the control arm that had lower average values and a decrease over time. 
 
 
 
