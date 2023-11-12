@@ -98,9 +98,15 @@ output = map(names, readin_csv) |> bind_rows()
 output = output |> 
   pivot_longer(week_1:week_8,
                names_to = "week", 
-               values_to = "value")
+               values_to = "value") |> 
+  mutate(week = substr(week, 6, 7))
 ```
 
+```{r spaghetti plot}
+output |> 
+  mutate(week = as.numeric(week)) |> 
+  ggplot(aes(x = week, y = value, color = id)) + geom_line() + facet_grid(~arm)
+```
 
 
 
