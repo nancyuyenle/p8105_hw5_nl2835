@@ -8,6 +8,7 @@ output: github_document
 ```{r setup, include=FALSE}
 library(tidyverse)
 knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
+library(purrr)
 
 ```
 
@@ -18,6 +19,8 @@ homicides <-
   janitor::clean_names() |> 
   separate(reported_date, into = c("year", "month", "day"), sep = c(4,6))  
 ```
+
+## Problem 1
 
 The raw data describes victim name, race, age, sex, location of homicide, and whether an arrest was made.
 
@@ -68,6 +71,35 @@ baltimore_pt |>
 ```
 
 The estimated proportion of homicides unsolved is 0.6456 with a confidence interval of [0.627, 0.663].
+
+**do rest of prop tests for each city later
+
+## Problem 2
+
+```{r tidy df with all participants}
+names = list.files(path="./local/data", full.names=TRUE)
+
+readin_csv = function(path) {
+  df =
+    read_csv(path) |>
+    janitor::clean_names() |>
+    mutate(
+      id = path
+    ) |> 
+    mutate(arm = substr(id, 14, 16), id = substr(id, 18, 19))
+} |> 
+  select(everything())
+
+output = map(names, readin_csv) |> bind_rows()
+
+```
+
+```{r tidy further}
+output = output |> 
+  pivot_longer(week_1:week_8,
+               names_to = "week", 
+               values_to = "value")
+```
 
 
 
