@@ -12,10 +12,17 @@ knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
 ```
 
 
-```{r load_libraries}
+```{r load csv file}
 homicides <- read.csv("./local/homicide-data.csv")
-
 ```
+
+The raw data describes victim name, race, age, sex, location of homicide, and whether an arrest was made.
+
+```{r}
+homicides = homicides |> 
+  mutate(location = paste(city, state))
+```
+
 
 
 
