@@ -1,0 +1,27 @@
+---
+title: "p8105_hw5_nl2835"
+author: "Nancy Le"
+date: '`r format(Sys.time(), "%Y-%m-%d")`'
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
+
+```
+
+
+```{r load_libraries}
+homicides <- read.csv("./local/homicide-data.csv")
+
+```
+
+
+
+
+
+
+
+
+
