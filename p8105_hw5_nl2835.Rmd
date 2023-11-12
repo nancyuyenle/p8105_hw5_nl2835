@@ -110,6 +110,67 @@ output |>
 
 The experimental arm had higher average values overall and an increase over time, compared to the control arm that had lower average values and a decrease over time. 
 
+## Problem 3
+
+```{r}
+set.seed(1)
+
+sim_ttest = function(mu) {
+  data = tibble(
+    x = rnorm(n=30, mean=mu, sd = 5)
+  )
+  
+output = data |> 
+  t.test() |> 
+  broom::tidy() |> 
+  select(estimate, p.value) |> 
+  rename(p_value = p.value)
+}
+
+sim_results_df = 
+  expand_grid(
+    mu = c(0, 1, 2, 3, 4, 5, 6),
+    iter = 1:50) |> 
+  mutate(
+    estimate_df = map(mu, sim_ttest) ) |> 
+  unnest(estimate_df)
+```
+
+```{r plot of proportion times null rejected and true value}
+sim_results_df |> 
+  group_by(mu) |> 
+  summarize(
+    power = sum(p_value < 0.05),
+    power_prop = power/50
+  ) |> 
+  ggplot(aes(x = mu, y= power_prop)) + geom_line()
+
+```
+
+The association between effect size and power is positive. 
+
+```{r avg est mu vs true mu}
+mu_avg = sim_results_df |> 
+  group_by(mu) |> 
+  summarize(
+  mu_avg = mean(estimate))
+
+null_rej = sim_results_df |> 
+  filter(p_value <0.05) |> 
+  group_by(mu) |> 
+  summarize(
+    mu_avg = mean(estimate)
+  )
+
+ggplot(mu_avg, aes(x = mu, y = mu_avg)) +
+  geom_line() +
+  geom_line(data = null_rej, color = "blue")
+```
+
+
+There is almost an exactly linear relationship between the true value of mu and the average estimate of mu in all samples. 
+
+In samples where the null was rejected, the sample average of mu across tests is not approximately equal to the true value of mu for lower effect sizes, because a lower effect size indicates weaker power and a lower probability that H0 is false.
 
 
 
