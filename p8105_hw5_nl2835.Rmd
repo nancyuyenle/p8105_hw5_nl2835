@@ -20,11 +20,26 @@ The raw data describes victim name, race, age, sex, location of homicide, and wh
 
 ```{r}
 homicides = homicides |> 
-  mutate(location = paste(city, state))
+  mutate(city_state = paste(city, state, sep = ", ")) |> 
+  mutate(city_state = as.numeric(city_state)) |> 
+  group_by(city_state) 
+
 ```
 
+```{r count number of homicides}
+homicides |> 
+  summarize(count = n())
+```
 
+There are `r nrow(homicides)` homicides.
 
+```{r}
+homicides |> 
+  filter(disposition == "Closed without arrest" | disposition == "Open/No arrest") |> 
+  summarize(count = n())
+```
+
+There are `r homicides |> filter(disposition == "Closed without arrest" | disposition == "Open/No arrest") |> summarize(count = n()) |> pull(count)` unsolved homicides. 
 
 
 
